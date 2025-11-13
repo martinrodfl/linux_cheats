@@ -1,0 +1,37 @@
+# HTML Essential Tags and Attributes
+
+name: 'HTML - Markup'
+color: 'MAGENTA'
+background: 'BG_MAGENTA'
+category: 'markup'
+commands:
+  - '<!DOCTYPE html>|Declaración HTML5'
+  - "<html lang='es'>|Elemento raíz"
+  - '<head>|Metadatos documento'
+  - "<meta charset='UTF-8'>|Codificación caracteres"
+  - '<title>|Título página'
+  - "<link rel='stylesheet'>|Enlazar CSS"
+  - "<script src=''>|Enlazar JavaScript"
+  - '<body>|Contenido visible'
+  - '<header>|Cabecera página'
+  - '<nav>|Navegación'
+  - '<main>|Contenido principal'
+  - '<section>|Sección contenido'
+  - '<article>|Artículo independiente'
+  - '<aside>|Contenido lateral'
+  - '<footer>|Pie de página'
+  - '<div>|Contenedor genérico'
+  - '<span>|Contenedor inline'
+  - '<h1> a <h6>|Encabezados'
+  - '<p>|Párrafo'
+  - "<a href=''>|Enlace/hipervínculo"
+  - "<img src='' alt=''>|Imagen"
+  - '<ul><li>|Lista desordenada'
+  - '<ol><li>|Lista ordenada'
+  - '<table><tr><td>|Tabla'
+  - "<form action=''>|Formulario"
+  - "<input type='text'>|Campo entrada"
+  - '<button>|Botón'
+  - "<label for=''>|Etiqueta campo"
+  - '<select><option>|Lista desplegable'
+  - '<textarea>|Área texto multilínea'

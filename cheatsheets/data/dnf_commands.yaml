@@ -1,0 +1,23 @@
+# DNF Package Manager Commands
+# Formato: comando|descripción
+
+name: 'DNF - Package Manager'
+color: 'RED'
+background: 'BG_RED'
+category: 'package-management'
+commands:
+  - 'dnf search <pkg>|Buscar paquetes'
+  - 'dnf install <pkg>|Instalar paquete'
+  - 'dnf update|Actualizar sistema'
+  - 'dnf remove <pkg>|Eliminar paquete'
+  - 'dnf list installed|Listar instalados'
+  - 'dnf info <pkg>|Info del paquete'
+  - 'dnf clean all|Limpiar caché'
+  - 'dnf history|Ver historial'
+  - 'dnf autoremove|Limpiar dependencias'
+  - 'dnf makecache|Actualizar metadatos'
+  - 'dnf provides <file>|Qué paquete contiene archivo'
+  - 'dnf group list|Listar grupos'
+  - 'dnf group install <group>|Instalar grupo'
+  - 'dnf downgrade <pkg>|Volver a versión anterior'
+  - 'dnf check|Verificar problemas'

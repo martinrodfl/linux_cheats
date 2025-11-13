@@ -1,0 +1,32 @@
+# File System Management Commands
+
+name: 'FILE SYSTEM - Management'
+color: 'CYAN'
+background: 'BG_CYAN'
+category: 'filesystem'
+commands:
+  - 'ls -lah|Listar detallado'
+  - 'ls -la --color=auto|Listar con colores'
+  - 'cd <path>|Cambiar directorio'
+  - 'cd -|Directorio anterior'
+  - 'pwd|Directorio actual'
+  - 'mkdir -p dir/sub|Crear directorios'
+  - 'cp -r src dest|Copiar recursivo'
+  - 'cp -p <file> <dest>|Copiar con permisos'
+  - 'mv src dest|Mover/renombrar'
+  - 'rm -rf dir|Eliminar recursivo'
+  - 'rm -i <file>|Eliminar con confirmación'
+  - "find . -name '*.log'|Buscar archivos"
+  - 'find . -type f -size +100M|Archivos grandes'
+  - "grep -r 'text' .|Buscar en archivos"
+  - "grep -n 'text' file|Con números de línea"
+  - 'tar -czf file.tar.gz dir/|Comprimir'
+  - 'tar -xzf file.tar.gz|Extraer'
+  - 'zip -r file.zip dir/|Crear ZIP'
+  - 'unzip file.zip|Extraer ZIP'
+  - 'du -sh *|Tamaño archivos'
+  - 'du -h --max-depth=1|Tamaño por nivel'
+  - 'df -h|Espacio en disco'
+  - 'lsof|Archivos abiertos'
+  - 'tree|Árbol de directorios'
+  - 'rsync -av src/ dest/|Sincronizar directorios'

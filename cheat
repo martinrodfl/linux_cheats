@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+
+# cheatsheets.sh - Script principal refactorizado
+# Versión modular que utiliza archivos externos para datos y funciones
+
+set -euo pipefail
+
+# Detectar directorio del script y ubicación de los módulos
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Buscar los módulos en diferentes ubicaciones
+if [ -d "$HOME/.config/cheatsheets" ]; then
+    # Instalación en ~/.config/cheatsheets (instalación estándar)
+    CHEATSHEETS_DIR="$HOME/.config/cheatsheets"
+elif [ -d "$SCRIPT_DIR/cheatsheets" ]; then
+    # Ejecución desde el directorio del proyecto
+    CHEATSHEETS_DIR="$SCRIPT_DIR/cheatsheets"
+else
+    echo "❌ Error: No se encontraron los módulos de cheatsheets" >&2
+    echo "Ubicaciones buscadas:" >&2
+    echo "  - $HOME/.config/cheatsheets" >&2
+    echo "  - $SCRIPT_DIR/cheatsheets" >&2
+    exit 1
+fi
+
+# Cargar módulos
+source "$CHEATSHEETS_DIR/lib/config.sh"
+source "$CHEATSHEETS_DIR/lib/display.sh"  
+source "$CHEATSHEETS_DIR/lib/utils.sh"
+
+# Función para parsear argumentos
+parse_arguments() {
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            -i|--interactive)
+                INTERACTIVE_MODE=true
+                shift
+                ;;
+            -n|--no-color)
+                COLOR_ENABLED=false
+                init_colors  # Reinicializar colores
+                shift
+                ;;
+            -c|--category)
+                if [ -n "${2:-}" ]; then
+                    SELECTED_CATEGORY="$2"
+                    shift 2
+                else
+                    echo "❌ Error: -c requiere especificar una categoría" >&2
+                    exit 1
+                fi
+                ;;
+            -l|--list)
+                echo "Categorías disponibles:"
+                list_categories | sed 's/^/  - /'
+                exit 0
+                ;;
+            -v|--version)
+                show_version
+                exit 0
+                ;;
+            -d|--debug)
+                DEBUG=true
+                shift
+                ;;
+            *)
+                echo "❌ Opción desconocida: $1" >&2
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+}
+
+# Función para mostrar categoría específica
+show_category() {
+    local category="$1"
+    
+    if ! validate_category "$category"; then
+        echo "❌ Categoría no encontrada: $category" >&2
+        echo "Categorías disponibles:" >&2
+        list_categories | sed 's/^/  - /' >&2
+        exit 1
+    fi
+    
+    local file="${CATEGORY_FILES[$category]}"
+    print_category_from_file "$file"
+}
+
+# Función para mostrar todas las categorías
+show_all_categories() {
+    debug_log "Mostrando todas las categorías"
+    
+    # Pares de categorías para mostrar lado a lado
+    local pairs=(
+        "dnf git"
+        "docker network" 
+        "filesystem system"
+        "laravel react"
+        "javascript css"
+    )
+    
+    for pair in "${pairs[@]}"; do
+        local cat1=$(echo $pair | cut -d' ' -f1)
+        local cat2=$(echo $pair | cut -d' ' -f2)
+        
+        debug_log "Procesando par: $cat1 + $cat2"
+        
+        # Verificar que las categorías existan
+        if [ -z "${CATEGORY_FILES[$cat1]:-}" ] || [ -z "${CATEGORY_FILES[$cat2]:-}" ]; then
+            debug_log "Saltando par $cat1/$cat2 - no encontrado"
+            continue
+        fi
+        
+        # Cargar datos de la primera categoría
+        local file1="${CATEGORY_FILES[$cat1]}"
+        local name1=$(grep "^name:" "$file1" | head -1 | sed "s/^name: *['\"]//; s/['\"]$//")
+        local color1=$(grep "^color:" "$file1" | head -1 | sed "s/^color: *['\"]//; s/['\"]$//")
+        local bg1=$(grep "^background:" "$file1" | head -1 | sed "s/^background: *['\"]//; s/['\"]$//")
+        
+        local commands1=()
+        load_commands_from_yaml "$file1" commands1
+        
+        # Cargar datos de la segunda categoría
+        local file2="${CATEGORY_FILES[$cat2]}"
+        local name2=$(grep "^name:" "$file2" | head -1 | sed "s/^name: *['\"]//; s/['\"]$//")
+        local color2=$(grep "^color:" "$file2" | head -1 | sed "s/^color: *['\"]//; s/['\"]$//")
+        local bg2=$(grep "^background:" "$file2" | head -1 | sed "s/^background: *['\"]//; s/['\"]$//")
+        
+        local commands2=()
+        load_commands_from_yaml "$file2" commands2
+        
+        # Construir argumentos para print_tiles_row
+        local args=("$name1" "$color1" "$bg1")
+        args+=("${commands1[@]}")
+        args+=("TILE2:$name2" "$color2" "$bg2")
+        args+=("${commands2[@]}")
+        
+        print_tiles_row "${args[@]}"
+    done
+    
+    # Mostrar permissions, html y terminal como tiles completos
+    for single_cat in "permissions" "html" "terminal"; do
+        if [ -n "${CATEGORY_FILES[$single_cat]:-}" ]; then
+            local single_file="${CATEGORY_FILES[$single_cat]}"
+            local single_name=$(grep "^name:" "$single_file" | head -1 | sed "s/^name: *['\"]//; s/['\"]$//")
+            local single_color=$(grep "^color:" "$single_file" | head -1 | sed "s/^color: *['\"]//; s/['\"]$//")
+            local single_bg=$(grep "^background:" "$single_file" | head -1 | sed "s/^background: *['\"]//; s/['\"]$//")
+            
+            local single_commands=()
+            load_commands_from_yaml "$single_file" single_commands
+            
+            print_full_tile "$single_name" "$single_color" "$single_bg" "${single_commands[@]}"
+        fi
+    done
+}
+
+# Función principal
+main() {
+    # Inicializar configuración
+    init_config
+    
+    # Parsear argumentos
+    parse_arguments "$@"
+    
+    # Modo interactivo
+    if [ "$INTERACTIVE_MODE" = "true" ]; then
+        interactive_menu
+        return
+    fi
+    
+    # Limpiar pantalla y mostrar header
+    clear
+    print_header
+    
+    # Mostrar contenido según la opción
+    if [ -n "$SELECTED_CATEGORY" ]; then
+        show_category "$SELECTED_CATEGORY"
+    else
+        show_all_categories
+    fi
+    
+    # Mostrar footer
+    print_footer
+}
+
+# Ejecutar script
+main "$@"
