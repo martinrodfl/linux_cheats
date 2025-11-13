@@ -1,0 +1,71 @@
+# Archivos de configuración del usuario
+cheatsheets/config/user_*.sh
+*.local
+
+# Archivos de backup
+*.bak
+*.backup
+*.old
+*~
+.*.swp
+.*.swo
+
+# Archivos de log
+*.log
+logs/
+
+# Archivos temporales
+tmp/
+temp/
+.tmp/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Directorios de IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de prueba personales
+test_*.sh
+prueba_*.sh
+
+# Caché de shell
+.zsh_history
+.bash_history
+
+# Archivos de instalación local
+install_local.sh
+uninstall.sh
+
+# Configuraciones personalizadas del usuario
+user_commands.yaml
+custom_*.yaml
+
+# Node modules (si se agregan herramientas JS)
+node_modules/
+package-lock.json
+
+# Python (si se agregan scripts Python)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+ENV/
+
+# Archives comprimidos
+*.tar.gz
+*.zip
+*.rar
+*.7z
+
+# Ejecutables compilados
+*.exe
+*.out
+*.app
